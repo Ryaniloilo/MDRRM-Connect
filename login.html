@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin Login — MDRRM-Connect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* New appealing styles */
+    :root {
+      --primary-color: #1a73e8; /* A vibrant blue, often used by Google */
+      --secondary-color: #34a853; /* A complementary green */
+      --text-color: #333;
+      --background-color: #e8f0fe; /* Light, welcoming background */
+      --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); /* More pronounced shadow */
+    }
+
+    body { 
+      display:flex; 
+      align-items:center; 
+      justify-content:center; 
+      height:100vh; 
+      margin: 0;
+      background-color: var(--background-color); 
+      font-family: 'Poppins', sans-serif; /* Modern, clean font */
+    }
+    
+    .login-box { 
+      background:#fff; 
+      padding:40px; /* Increased padding */
+      border-radius:16px; /* Slightly more rounded */
+      box-shadow: var(--box-shadow); 
+      width:360px; /* Slightly wider */
+      transition: transform 0.3s ease;
+    }
+
+    .login-box:hover {
+      transform: translateY(-5px); /* Subtle hover lift effect */
+    }
+    
+    h2 { 
+      margin-bottom:30px; 
+      color: var(--primary-color); 
+      text-align:center; 
+      font-weight: 700; /* Bolder title */
+      font-size: 1.8rem;
+    }
+    
+    input { 
+      width:calc(100% - 24px); /* Account for padding */
+      padding:12px; 
+      margin:12px 0; /* Increased vertical margin */
+      border:1px solid #ddd; /* Lighter border */
+      border-radius:10px; /* More rounded input fields */
+      font-size: 1rem;
+      color: var(--text-color);
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: var(--primary-color); /* Highlight on focus */
+      outline: none;
+      box-shadow: 0 0 5px rgba(26, 115, 232, 0.3);
+    }
+    
+    button { 
+      width:100%; 
+      padding:14px; /* Increased button size */
+      margin-top:20px; 
+      background: var(--primary-color); 
+      color:white; 
+      border:none; 
+      border-radius:10px; 
+      cursor:pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      transition: background 0.3s ease;
+    }
+
+    button:hover { 
+      background:#1765c7; /* Darker hover blue */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    
+    .links { 
+      margin-top:25px; 
+      text-align:center; 
+      border-top: 1px solid #eee; /* Separator line */
+      padding-top: 15px;
+    }
+    
+    .links a { 
+      color: var(--primary-color); 
+      cursor:pointer; 
+      display:block; 
+      margin-top:10px; 
+      font-weight: 400;
+      font-size: 0.9rem;
+      text-decoration: none; /* Remove underline */
+      transition: color 0.3s;
+    }
+
+    .links a:hover {
+      color: var(--secondary-color); /* Green highlight on hover */
+      text-decoration: underline;
+    }
+    
+    /* Optional: Add a subtle logo/icon placeholder for visual interest */
+    .logo-placeholder {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2.5rem;
+      color: var(--primary-color);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="logo-placeholder">🛡️</div> <h2>MDRRM-Connect Admin</h2>
+    <input type="text" id="username" placeholder="Enter Username" />
+    <input type="password" id="password" placeholder="Enter Password" />
+    <button onclick="login()">Sign In</button>
+    
+    <div class="links">
+      <a onclick="showRegister()">➕ Add New Admin</a>
+      <a onclick="forgotPassword()">🔑 Forgot Password</a>
+    </div>
+  </div>
+
+  <script>
+    // Initialize default admin if none exist
+    if (!localStorage.getItem("admins")) {
+      localStorage.setItem("admins", JSON.stringify([{username:"admin", password:"admin123"}]));
+    }
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const admins = JSON.parse(localStorage.getItem("admins"));
+
+      const found = admins.find(a => a.username === username && a.password === password);
+      if (found) {
+        localStorage.setItem("loggedInAdmin", username);
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Invalid username or password!");
+      }
+    }
+
+    function showRegister() {
+      const newUser = prompt("Enter new admin username:");
+      const newPass = prompt("Enter new admin password:");
+      if (newUser && newPass) {
+        const admins = JSON.parse(localStorage.getItem("admins"));
+        admins.push({username:newUser, password:newPass});
+        localStorage.setItem("admins", JSON.stringify(admins));
+        alert("New admin added successfully!");
+      }
+    }
+
+    function forgotPassword() {
+      const username = prompt("Enter your username:");
+      const admins = JSON.parse(localStorage.getItem("admins"));
+      const found = admins.find(a => a.username === username);
+      if (found) {
+        alert("Your password is: " + found.password);
+      } else {
+        alert("Username not found!");
+      }
+    }
+  </script>
+</body>
+</html>

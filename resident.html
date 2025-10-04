@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MDRRM-Connect — Resident Report</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    /* Hero */
+    .hero {
+      height: 400px;
+      background: url('hero-bg.png') center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(106, 13, 173, 0.65);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-content h1 {
+      font-size: 2.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero-content p {
+      font-size: 1.2rem;
+    }
+
+    /* Map */
+    #resident-map {
+      height: 350px;
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    /* Report item styling */
+    .report-item {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      background: #fafafa;
+    }
+
+    .report-item img,
+    .report-item video {
+      display: block;
+      margin-top: 6px;
+      max-width: 100%;
+      border-radius: 6px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #333;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      transform: translateY(20px);
+      z-index: 9999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">MDRRM-Connect - Resident Dashboard</div>
+    <nav class="top-actions">
+      <a href="index.html" class="btn">Home</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <div class="hero hero-resident">
+    <div class="hero-content">
+      <h1>Emergency Report</h1>
+      <p>Your immediate report helps our DRRMC team respond swiftly. Use the "One-tap" button below for the fastest alert.</p>
+    </div>
+  </div>
+
+  <main class="container">
+
+    <!-- Report Form -->
+    <section id="resident" class="card resident-panel visible">
+      <div class="section-title">Resident — One-tap Emergency Report</div>
+      <div class="resident-content">
+        <div class="incident-type">
+          <label>Incident Type</label>
+          <select id="incident-type">
+            <option>Fire</option>
+            <option>Flood</option>
+            <option>Medical</option>
+            <option>Accident</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="resident-actions">
+          <textarea id="incident-desc" style="width:550px; height: 80px;" placeholder="Short description (optional)"></textarea>
+
+          <!-- File upload -->
+          <div class="file-upload" style="margin:10px 0;">
+            <label for="incident-media">Attach Photo/Video:</label>
+            <input type="file" id="incident-media" accept="image/*,video/*">
+          </div>
+
+          <div class="resident-cta">
+            <input id="resident-name" placeholder="Your name (optional)" />
+            <input id="resident-phone" placeholder="Phone (optional)" />
+            <select id="resident-zone">
+              <option value="">Select barangay zone (optional)</option>
+            </select>
+            <button id="one-tap-report" class="btn btn-danger">One-tap REPORT</button>
+          </div>
+        </div>
+
+        <div id="resident-feedback" class="feedback"></div>
+        <small class="note">Report will capture your GPS location (if allowed) and timestamp.</small>
+      </div>
+    </section>
+
+    <!-- Emergency Notifications -->
+    <section id="resident-notifications" class="card">
+      <div class="section-title">Emergency Notifications</div>
+      <button id="clear-notifs-resident" class="btn btn-small" style="float:right;">Clear</button>
+      <div id="resident-notifs"></div>
+    </section>
+
+    <!-- Active Reports -->
+    <section id="active-reports" class="card">
+      <div class="section-title">Active Reports</div>
+      <div id="reports-list"></div>
+    </section>
+
+    <!-- Map with zone filter -->
+    <section id="map-section" class="card">
+      <div class="section-title">
+        🗺️ Nearby Incidents
+        <div style="float:right;">
+          <select id="map-zone-filter" class="btn btn-small">
+            <option value="myzone">My Zone Only</option>
+            <option value="all">All Zones</option>
+          </select>
+          <button id="refresh-map" class="btn btn-small">Refresh Map</button>
+        </div>
+      </div>
+      <div id="resident-map"></div>
+    </section>
+
+    <!-- History -->
+    <section id="history" class="card">
+      <div class="section-title">
+        Responded Reports
+        <button id="export-history" class="btn btn-small" style="float:right;margin-left:8px;">Export CSV</button>
+        <button id="clear-history" class="btn btn-small danger" style="float:right;">Clear History</button>
+      </div>
+      <div id="history-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2025 MDRRM-Connect Project. Designed with ❤️ for Dumangas.</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="common.js"></script>
+  <script src="resident.js"></script>
+</body>
+</html>

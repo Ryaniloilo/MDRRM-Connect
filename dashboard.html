@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+   <title>MDRRM-Connect Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<style>
+   /* Hero */
+    .hero {
+      height: 400px;
+      background: url('hero-bg.png') center/cover no-repeat;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(106, 13, 173, 0.65);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-content h1 {
+      font-size: 2.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .hero-content p {
+      font-size: 1.2rem;
+    }
+
+</style>
+
+</head>
+<body>
+  <header class="topbar">
+ <div class="brand">MDRRMC Connect Dashboard</div>
+  <nav class="top-actions">
+    <span id="welcomeUser"></span>
+    <button onclick="logout()" class="btn">Logout</button>
+  </nav>
+  </header>
+  <!-- Hero -->
+    <div class="hero hero-dashboard">
+    <div class="hero-content">
+      <h1>Emergency Report</h1>
+      <p>Your immediate report helps our MDRRMC team respond swiftly. Use the "One-tap" button below for the fastest alert.</p>
+    </div>
+  </div>
+
+  <main class="container">
+    <!-- Dashboard with map + reports -->
+    <section id="dashboard" class="card grid-col-2 visible">
+      <div class="card-section map-card">
+        <div class="section-title">Live Reports Map</div>
+        <div id="map" class="map"></div>
+        <div class="map-legend">
+          <span class="legend-item"><span class="dot red"></span> High priority</span>
+          <span class="legend-item"><span class="dot orange"></span> Medium</span>
+          <span class="legend-item"><span class="dot green"></span> Low</span>
+        </div>
+      </div>
+
+      <div class="card-section list-card">
+        <div class="section-title">Incoming Reports</div>
+        <div class="controls">
+  	<select id="filter-zone">
+  	  <option value="">All Barangay Zones</option>
+  	</select>
+ 	 <select id="filter-status">
+   		 <option value="">All Statuses</option>
+    		<option value="pending">Pending</option>
+    		<option value="dispatched">Dispatched</option>
+   		 <option value="resolved">Resolved</option>
+ 	 </select>
+  	<button id="reset-filters" class="btn btn-small">Reset</button>
+	</div>
+
+        <ul id="reports-list" class="reports-list"></ul>
+      </div>
+    </section>
+
+    <!-- Sidebar: inventory + notifications -->
+    <aside class="sidebar card visible">
+      
+
+    <div class="section-title">Notifications</div>
+<div class="notifications" style="display: flex; flex-direction: column; gap: 15px; width: 350px;">
+
+  <textarea id="notif-message" style="width: 300px; height: 100px;" placeholder="Type your message here..."></textarea>
+
+  <div class="notif-details" style="display: flex; align-items: center; gap: 20px;">
+    
+    <select id="notif-zone" style="width: 150px; height: 35px; font-size: 12px;">
+      <option value="">All Barangay Zones</option>
+    </select>
+    
+    <div class="notif-channels" style="display: flex; gap: 15px;">
+        <label><input type="checkbox" id="notif-sms" /> SMS</label>
+        <label><input type="checkbox" id="notif-push" checked /> In-app</label>
+    </div>
+  </div>
+
+  <div class="notif-actions">
+    <button id="send-notif" class="btn btn-primary" style="padding: 10px 20px; font-size: 18px;">Send</button>
+  </div>
+    <div id="notif-log" class="notif-log" style="width: 100%; order: 5;"></div>
+</div>
+<div class="section-title" style="margin-top: 20px; border-top: 1px solid var(--border-light); padding-top: 15px;">
+  Notification Log
+  <button id="clear-notifs-dashboard" class="btn btn-small" style="float:right;">Clear</button>
+</div>
+ 
+
+      <hr />
+
+      <!-- Responded Reports History -->
+      <div class="section-title">
+        Responded History
+        <button id="export-history-dashboard" class="btn btn-small" style="float:right;margin-left:8px;">Export CSV</button>
+        <button id="clear-history-dashboard" class="btn btn-small danger" style="float:right;">Clear History</button>
+      </div>
+
+      <div id="history-list"></div>
+      <hr />
+    </aside>
+<!-- Relief Inventory Section -->
+<section id="relief-inventory" style="margin-top:10px; padding:5px; background:#f9f9f9; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
+  <h2 style="text-align:center; color:#6a0dad; margin-bottom:20px;">Relief Inventory</h2>
+  
+  <table id="inventory-table" style="width:100%; border-collapse:collapse; margin-bottom:20px; font-family:Arial, sans-serif; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+    <thead style="background:#6a0dad; color:white;">
+      <tr>
+        <th style="padding:12px; border:1px solid #ddd;">Item</th>
+        <th style="padding:12px; border:1px solid #ddd;">Available</th>
+        <th style="padding:12px; border:1px solid #ddd;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Example rows (your JS will populate real items here) -->
+      <tr style="background:#ffffff; transition:background 0.3s;"
+          onmouseover="this.style.background='#e8d9f5';"
+          onmouseout="this.style.background='#ffffff';">
+        <td style="padding:12px; border:1px solid #ddd;">Rice 10kg</td>
+        <td style="padding:12px; border:1px solid #ddd;">50</td>
+        <td style="padding:12px; border:1px solid #ddd;">
+          <button 
+            style="padding:6px 12px; border:none; border-radius:5px; background:#6a0dad; color:white; cursor:pointer; transition:background 0.3s;"
+            onmouseover="this.style.background='#8b2ddf';"
+            onmouseout="this.style.background='#6a0dad';">
+            Allocate
+          </button>
+        </td>
+      </tr>
+      <tr style="background:#f2f2f2; transition:background 0.3s;"
+          onmouseover="this.style.background='#e8d9f5';"
+          onmouseout="this.style.background='#f2f2f2';">
+        <td style="padding:12px; border:1px solid #ddd;">Canned Goods</td>
+        <td style="padding:12px; border:1px solid #ddd;">120</td>
+        <td style="padding:12px; border:1px solid #ddd;">
+          <button 
+            style="padding:6px 12px; border:none; border-radius:5px; background:#6a0dad; color:white; cursor:pointer; transition:background 0.3s;"
+            onmouseover="this.style.background='#8b2ddf';"
+            onmouseout="this.style.background='#6a0dad';">
+            Allocate
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="display:flex; justify-content:center; gap:10px;">
+    <input id="new-item-name" placeholder="New item (e.g. Rice 10kg)" style="height:40px; width:200px; padding:0 10px; border:1px solid #ccc; border-radius:5px;" />
+    <input id="new-item-qty" type="number" placeholder="Qty" min="1" style="height:40px; width:80px; padding:0 10px; border:1px solid #ccc; border-radius:5px;" />
+    <button id="add-item" class="btn btn-primary" style="height:40px; padding:0 20px; background:#6a0dad; color:white; border:none; border-radius:5px; cursor:pointer; transition:background 0.3s;"
+      onmouseover="this.style.background='#8b2ddf';"
+      onmouseout="this.style.background='#6a0dad';">
+      Add
+    </button>
+  </div>
+</section>
+
+
+<section id="analytics" class="card" style="margin-top:20px;">
+  <h2 id="analytics-title">📊 Incident Analytics (Active)</h2>
+
+  <!-- ✅ Toggle -->
+  <div style="text-align:center; margin-bottom:10px;">
+    <label>
+      <input type="radio" name="analytics-source" value="reports" checked />
+      Active Incidents
+    </label>
+    <label style="margin-left:15px;">
+      <input type="radio" name="analytics-source" value="history" />
+      All Incidents (History)
+    </label>
+  </div>
+
+  <div style="display:flex; flex-wrap:wrap; gap:20px; justify-content:center;">
+    <canvas id="incidentChart" width="350" height="350"></canvas>
+    <canvas id="zoneChart" width="400" height="350"></canvas>
+    <canvas id="timeChart" width="500" height="350"></canvas>
+  </div>
+</section>
+
+
+
+    <!-- Allocation modal -->
+    <div id="alloc-modal" class="modal hidden">
+      <div class="modal-inner">
+        <h3>Allocate Relief to Report</h3>
+        <div id="alloc-body">
+          <p id="alloc-report-info"></p>
+          <div class="form-inline">
+            <select id="alloc-item"></select>
+            <input id="alloc-qty" type="number" min="1" placeholder="Qty" />
+            <button id="alloc-confirm" class="btn btn-primary">Allocate</button>
+          </div>
+          <div id="alloc-message" class="feedback"></div>
+        </div>
+        <button id="alloc-close" class="btn">Close</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">    <p>&copy; 2025 MDRRM-Connect Project. Designed with ❤️ for Dumangas.</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="common.js"></script>
+  <script src="dashboard.js"></script>
+<script>
+  const loggedIn = localStorage.getItem("loggedInAdmin");
+  if (!loggedIn) {
+    alert("You must login first!");
+    window.location.href = "login.html";
+  } else {
+    document.getElementById("welcomeUser").textContent = "Welcome, " + loggedIn;
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedInAdmin");
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>
