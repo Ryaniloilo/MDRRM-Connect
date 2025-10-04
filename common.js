@@ -3,7 +3,6 @@
 const DB = {
   reports: 'bs_reports_v1',
   zones: 'bs_zones_v1',
-  inventory: 'bs_inventory_v1',
   notifications: 'bs_notifications_v1',
   history: 'bs_history_v1'
 };
@@ -20,7 +19,6 @@ function write(key, val) {
 // Versioned Seeding
 // ------------------------------
 const ZONES_VERSION = "v2";      // bump this when barangay list changes
-const INVENTORY_VERSION = "v1";  // bump this when default inventory changes
 
 function seedZones() {
   const barangays = [
@@ -73,24 +71,10 @@ function seedZones() {
   write(DB.zones, barangays);
 }
 
-function seedInventory() {
-  const items = [
-    { id: 'I1', name: 'Rice 5kg', qty: 50 },
-    { id: 'I2', name: 'Bottled Water (500ml)', qty: 200 },
-    { id: 'I3', name: 'Blankets', qty: 80 }
-  ];
-  write(DB.inventory, items);
-}
-
 // Run seeding with version checks
 if (localStorage.getItem("zones_version") !== ZONES_VERSION) {
   seedZones();
   localStorage.setItem("zones_version", ZONES_VERSION);
-}
-
-if (localStorage.getItem("inventory_version") !== INVENTORY_VERSION) {
-  seedInventory();
-  localStorage.setItem("inventory_version", INVENTORY_VERSION);
 }
 
 // Initialize history if empty

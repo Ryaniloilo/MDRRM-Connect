@@ -131,61 +131,6 @@
       <div id="history-list"></div>
       <hr />
     </aside>
-<!-- Relief Inventory Section -->
-<section id="relief-inventory" style="margin-top:10px; padding:5px; background:#f9f9f9; border-radius:10px; box-shadow:0 4px 8px rgba(0,0,0,0.1);">
-  <h2 style="text-align:center; color:#6a0dad; margin-bottom:20px;">Relief Inventory</h2>
-  
-  <table id="inventory-table" style="width:100%; border-collapse:collapse; margin-bottom:20px; font-family:Arial, sans-serif; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
-    <thead style="background:#6a0dad; color:white;">
-      <tr>
-        <th style="padding:12px; border:1px solid #ddd;">Item</th>
-        <th style="padding:12px; border:1px solid #ddd;">Available</th>
-        <th style="padding:12px; border:1px solid #ddd;">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Example rows (your JS will populate real items here) -->
-      <tr style="background:#ffffff; transition:background 0.3s;"
-          onmouseover="this.style.background='#e8d9f5';"
-          onmouseout="this.style.background='#ffffff';">
-        <td style="padding:12px; border:1px solid #ddd;">Rice 10kg</td>
-        <td style="padding:12px; border:1px solid #ddd;">50</td>
-        <td style="padding:12px; border:1px solid #ddd;">
-          <button 
-            style="padding:6px 12px; border:none; border-radius:5px; background:#6a0dad; color:white; cursor:pointer; transition:background 0.3s;"
-            onmouseover="this.style.background='#8b2ddf';"
-            onmouseout="this.style.background='#6a0dad';">
-            Allocate
-          </button>
-        </td>
-      </tr>
-      <tr style="background:#f2f2f2; transition:background 0.3s;"
-          onmouseover="this.style.background='#e8d9f5';"
-          onmouseout="this.style.background='#f2f2f2';">
-        <td style="padding:12px; border:1px solid #ddd;">Canned Goods</td>
-        <td style="padding:12px; border:1px solid #ddd;">120</td>
-        <td style="padding:12px; border:1px solid #ddd;">
-          <button 
-            style="padding:6px 12px; border:none; border-radius:5px; background:#6a0dad; color:white; cursor:pointer; transition:background 0.3s;"
-            onmouseover="this.style.background='#8b2ddf';"
-            onmouseout="this.style.background='#6a0dad';">
-            Allocate
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div style="display:flex; justify-content:center; gap:10px;">
-    <input id="new-item-name" placeholder="New item (e.g. Rice 10kg)" style="height:40px; width:200px; padding:0 10px; border:1px solid #ccc; border-radius:5px;" />
-    <input id="new-item-qty" type="number" placeholder="Qty" min="1" style="height:40px; width:80px; padding:0 10px; border:1px solid #ccc; border-radius:5px;" />
-    <button id="add-item" class="btn btn-primary" style="height:40px; padding:0 20px; background:#6a0dad; color:white; border:none; border-radius:5px; cursor:pointer; transition:background 0.3s;"
-      onmouseover="this.style.background='#8b2ddf';"
-      onmouseout="this.style.background='#6a0dad';">
-      Add
-    </button>
-  </div>
-</section>
 
 
 <section id="analytics" class="card" style="margin-top:20px;">

@@ -4,10 +4,6 @@
 const reportsList = document.getElementById('reports-list');
 const filterZone = document.getElementById('filter-zone');
 const filterStatus = document.getElementById('filter-status');
-const inventoryTableBody = document.querySelector('#inventory-table tbody');
-const addItemBtn = document.getElementById('add-item');
-const newItemName = document.getElementById('new-item-name');
-const newItemQty = document.getElementById('new-item-qty');
 const notifZone = document.getElementById('notif-zone');
 const notifMessage = document.getElementById('notif-message');
 const notifLog = document.getElementById('notif-log');
@@ -30,9 +26,6 @@ if (historyList && historyList.parentNode) {
 }
 
 // Allocation modal
-const allocModal = document.getElementById('alloc-modal');
-const allocItem = document.getElementById('alloc-item');
-const allocQty = document.getElementById('alloc-qty');
 const allocConfirm = document.getElementById('alloc-confirm');
 const allocClose = document.getElementById('alloc-close');
 const allocReportInfo = document.getElementById('alloc-report-info');
@@ -104,7 +97,6 @@ function renderReports() {
       </div>
       <div class="report-actions">
         <button class="btn view" onclick="focusReport('${r.id}')">View</button>
-        <button class="btn allocate" onclick="openAllocModal('${r.id}')">Allocate</button>
         <select onchange="updateStatus('${r.id}', this.value)">
           <option value="pending" ${r.status==="pending"?"selected":""}>Pending</option>
           <option value="dispatched" ${r.status==="dispatched"?"selected":""}>Dispatched</option>
@@ -221,26 +213,6 @@ function updateStatus(id, newStatus) {
   }
 }
 
-// -------------------------
-// Inventory
-// -------------------------
-function renderInventory() {
-  const inv = read(DB.inventory);
-  inventoryTableBody.innerHTML = '';
-  inv.forEach(it => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${it.name}</td>
-      <td>${it.qty}</td>
-      <td>
-        <button onclick="editItem('${it.id}')">Edit</button>
-        <button onclick="deductItem('${it.id}')">Allocate</button>
-        <button onclick="deleteItem('${it.id}')">Delete</button>
-      </td>
-    `;
-    inventoryTableBody.appendChild(tr);
-  });
-}
 
 // -------------------------
 // Notifications
@@ -269,7 +241,6 @@ function openAllocModal(id) {
   currentAllocReportId = id;
   const r = read(DB.reports).find(x => x.id === id);
   allocReportInfo.textContent = `${r.incidentType} — ${r.description || ''}`;
-  populateAllocItems();
   allocMessage.textContent = '';
   allocQty.value = 1;
   allocModal.classList.remove('hidden');
@@ -478,73 +449,9 @@ if (resetMapBtn) {
 // -------------------------
 document.addEventListener("DOMContentLoaded", () => {
   renderReports();
-  renderInventory();
-  renderHistory();
+   renderHistory();
   renderAnalytics(); // ✅ show charts on page load
 });
 
 
-
-// -------------------------
-// Inventory Functions
-// -------------------------
-function addItem() {
-  const name = newItemName.value.trim();
-  const qty = parseInt(newItemQty.value.trim());
-
-  if (!name || isNaN(qty) || qty <= 0) {
-    alert("Please enter a valid item name and quantity.");
-    return;
-  }
-
-  const inv = read(DB.inventory);
-  inv.push({ id: 'I' + Date.now(), name, qty });
-  write(DB.inventory, inv);
-
-  newItemName.value = '';
-  newItemQty.value = '';
-  renderInventory();
-}
-
-function editItem(id) {
-  const inv = read(DB.inventory);
-  const item = inv.find(it => it.id === id);
-  if (!item) return;
-
-  const newName = prompt("Edit item name:", item.name);
-  const newQty = parseInt(prompt("Edit quantity:", item.qty));
-
-  if (newName && !isNaN(newQty)) {
-    item.name = newName;
-    item.qty = newQty;
-    write(DB.inventory, inv);
-    renderInventory();
-  }
-}
-
-function deductItem(id) {
-  const inv = read(DB.inventory);
-  const item = inv.find(it => it.id === id);
-  if (!item) return;
-
-  const qty = parseInt(prompt("Enter quantity to allocate:", 1));
-  if (!isNaN(qty) && qty > 0 && qty <= item.qty) {
-    item.qty -= qty;
-    write(DB.inventory, inv);
-    renderInventory();
-  } else {
-    alert("Invalid quantity.");
-  }
-}
-
-function deleteItem(id) {
-  let inv = read(DB.inventory);
-  inv = inv.filter(it => it.id !== id);
-  write(DB.inventory, inv);
-  renderInventory();
-}
-
-// Bind Add button
-if (addItemBtn) {
-  addItemBtn.addEventListener("click", addItem);
-}
+ 
