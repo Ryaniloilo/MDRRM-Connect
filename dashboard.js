@@ -453,5 +453,32 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAnalytics(); // ✅ show charts on page load
 });
 
+if (clearHistoryBtn) {
+  clearHistoryBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to clear all history?")) {
+      write(DB.history, []); // clear localStorage history
+      renderHistory();       // re-render empty list
+    }
+  });
+}
+
+function logNotification(notif) {
+  const div = document.createElement("div");
+  div.className = "notif-entry";
+  div.innerHTML = `
+    <strong>${notif.zone || "All Zones"}</strong>: ${notif.message}
+    <br><small>${new Date(notif.sentTime).toLocaleString()}</small>
+    <span style="color:gray;"> [${notif.channels.sms ? "SMS" : ""}${notif.channels.push ? " In-App" : ""}]</span>
+  `;
+  notifLog.prepend(div);
+}
+
+const clearNotifsBtn = document.getElementById("clear-notifs-dashboard");
+if (clearNotifsBtn) {
+  clearNotifsBtn.addEventListener("click", () => {
+    notifLog.innerHTML = "";
+    write(DB.notifications, []); // clear stored notifications
+  });
+}
 
  
